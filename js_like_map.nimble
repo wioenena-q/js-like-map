@@ -12,5 +12,3 @@ srcDir        = "src"
 requires "nim >= 1.6.6"
 
 
-task tests, "Run all tests":
-  exec "nim c -r --hints:off tests/main.nim"
