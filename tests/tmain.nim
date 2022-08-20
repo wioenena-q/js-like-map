@@ -7,7 +7,7 @@
 
 import unittest, options
 
-import js_map_like
+import js_like_map
 
 var map = newJSLikeMap[string, int]()
 
@@ -30,3 +30,25 @@ suite "JSLikeMap":
     assert map.delete("a") == true
     assert not map.has("a")
     assert map.size == 0
+
+  test "entries":
+    for x in 0..10:
+      map.set($x, x)
+
+    for k, v in map.entries:
+      assert k is string
+      assert v is int
+
+  test "forEach":
+    map.forEach do (v: int, k: string, m: typeof(map)) -> void:
+      assert v is int
+      assert k is string
+      assert m is typeof(map)
+
+  test "keys":
+    for k in map.keys:
+      assert k is string
+
+  test "values":
+    for v in map.values:
+      assert v is int
