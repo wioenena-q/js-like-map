@@ -1,9 +1,10 @@
-import std/tables
+from std/tables import TableRef, `[]=`, `[]`, contains, hasKey, len, del, pairs,
+    keys, values
 from std/options import Option, some, none
 
 type
   JSLikeMap[K, V] = ref object
-    cache*: TableRef[K, V]
+    cache: TableRef[K, V]
 
 
 
@@ -15,7 +16,8 @@ proc newJSLikeMap*[K, V](): JSLikeMap[K, V] =
   map
 
 
-proc set*[K, V](m: JSLikeMap[K, V], key: K, value: V): JSLikeMap[K, V] =
+proc set*[K, V](m: JSLikeMap[K, V], key: K, value: V): JSLikeMap[K,
+    V] {.discardable.} =
   ## Add a key-value pair to the map.
   ## Return the this map.
   m.cache[key] = value
@@ -25,7 +27,7 @@ proc set*[K, V](m: JSLikeMap[K, V], key: K, value: V): JSLikeMap[K, V] =
 proc get*[K, V](m: JSLikeMap[K, V], key: K): Option[V] =
   ## Get the value for a key from the map.
   if key in m.cache:
-    some(m.cache[key])
+    some m.cache[key]
   else:
     none int
 
@@ -49,3 +51,28 @@ proc clear*[K, V](m: JSLikeMap[K, V]): void =
 proc size*[K, V](m: JSLikeMap[K, V]): int =
   ## Return the number of keys in the map.
   m.cache.len
+
+
+iterator entries*[K, V](m: JSLikeMap[K, V]): tuple[key: K, val: V] =
+  ## Return an iterator over the map's entries.
+  for k, v in m.cache.pairs:
+    yield (key: k, val: v)
+
+proc forEach*[K, V](m: JSLikeMap[K, V], p: proc (
+    value: V, key: K, map: JSLikeMap[K, V]): void {.closure.}): void =
+  ## Call a function for each entry in the map.
+  for k, v in m.cache.pairs:
+    p(v, k, m)
+
+
+iterator keys*[K, V](m: JSLikeMap[K, V]): lent K =
+  ## Return an iterator over the map's keys.
+  for k in m.cache.keys:
+    yield k
+
+iterator values*[K, V](m: JSLikeMap[K, V]): lent V =
+  ## Return an iterator over the map's values.
+  for v in m.cache.values:
+    yield v
+
+
